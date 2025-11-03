@@ -2,322 +2,1245 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz & Mini-Jeux — Démo monétisable</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="description" content="Site démo avec quiz et mini-jeux, emplacements pour publicités display et vidéo récompensée." />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Code Magique</title>
   <style>
-    .ad-slot { background: repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6 10px,#e5e7eb 10px,#e5e7eb 20px); }
-    .ad-label { font-size: 10px; letter-spacing: .08em; }
-    .spin { animation: spin 1s linear infinite; }
-    @keyframes spin { from {transform: rotate(0)} to {transform: rotate(360deg)} }
-  </style>
+  :root {
+    --bg-0: #071129;
+    --bg-1: #0b1220;
+    --accent: #6366f1;
+    --accent-2: #7c3aed;
+    --muted: #9aa7bd;
+    --glass: rgba(255,255,255,0.03);
+    --glass-strong: rgba(255,255,255,0.06);
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, var(--bg-0), #08182b);
+    color: #e9f2ff;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--bg-1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .5);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--accent);
+  }
+
+  .search input {
+    width: 420px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--glass);
+    color: #e9f2ff;
+    outline: none;
+  }
+
+  .search input::placeholder {
+    color: var(--muted);
+  }
+
+  .actions button {
+    margin-left: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .hero {
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--bg-1);
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, .4);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .card h4 {
+    margin: 10px 0 6px;
+    color: #fff;
+  }
+
+  .card p {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .card .price {
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--accent);
+  }
+
+  .card .card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: white;
+    cursor: pointer;
+  }
+.fav {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.2s;
+  padding: 4px;
+}
+.fav:hover {
+  transform: scale(1.2);
+}
+.fav.active {
+  color: red;
+}
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .5);
+    padding: 20px;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background: var(--bg-1);
+    padding: 16px;
+    border-radius: 8px;
+    width: 420px;
+    color: #e9f2ff;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .modal-content input,
+  .modal-content textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    background: var(--glass);
+    color: #e9f2ff;
+  }
+
+  .admin-main {
+    padding: 20px;
+  }
+
+  .admin-panel {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--bg-1);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* === ADMIN - Style amélioré pour les cartes produits === */
+  .admin-panel .card {
+    background: #0b1220; /* même fond que le thème principal */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .admin-panel .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
+  }
+
+  .admin-panel .card h4 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .admin-panel .card .price {
+    color: #7c3aed;
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .admin-panel .card p {
+    background: #fff;
+    color: #000;
+    font-size: 18px;
+    font-weight: 400;
+    padding: 10px;
+    border-radius: 8px;
+    line-height: 1.4;
+  }
+
+  .admin-panel .card .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .admin-panel .card .card-actions button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+  }
+
+  .admin-panel .card .card-actions .edit {
+    background: #facc15;
+    color: #000;
+  }
+
+  .admin-panel .card .card-actions .delete {
+    background: #ef4444;
+  }
+
+  /* Styles additionnels pour l'admin */
+  .admin-section {
+    display: none;
+  }
+
+  .admin-section.visible {
+    display: block;
+  }
+
+  .admin-nav {
+    margin-bottom: 20px;
+  }
+
+  .admin-nav button.active {
+    background: var(--accent);
+  }
+
+  @media (max-width:600px) {
+    .search input {
+      width: 160px;
+    }
+  }
+
+  /* Style pour login/signup */
+  .auth-container {
+    background: var(--bg-1);
+    width: 800px;
+    padding: 0;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    display: flex;
+    position: relative;
+    color: #e9f2ff;
+  }
+
+  .auth-section {
+    flex: 1;
+    padding: 40px;
+    position: relative;
+  }
+
+  .auth-section:first-child {
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .auth-section h2 {
+    margin-bottom: 30px;
+    color: var(--accent);
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .auth-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .auth-section input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    font-size: 14px;
+    background: var(--glass);
+    color: #e9f2ff;
+  }
+
+  .auth-section input:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .auth-section button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
+
+  .auth-section button:hover {
+    background: var(--accent-2);
+  }
+
+  #closeAuthBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--muted);
+    z-index: 2;
+  }
+
+  @media (max-width: 850px) {
+    .auth-container {
+      width: 90%;
+      flex-direction: column;
+    }
+
+    .auth-section:first-child {
+      border-right: none;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+  }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-
-  <!-- Top sticky ad -->
-  <div id="ad-top-sticky" class="ad-slot sticky top-0 z-50 border-b border-slate-200">
-    <div class="max-w-6xl mx-auto py-2 flex items-center justify-center">
-      <span class="ad-label uppercase text-slate-500 mr-2">Publicité</span>
-      <div id="ad-top-container"></div>
-      <!-- START Ezmob TAG -->
-      <script>
-      window.adk_pdisp = {
-        'h' : 'xml.qualiclicks.com', 
-        'f' : 874125,
-        'a' : 'zwOM',
-        'ps' : [1],
-        'cin' : 4,
-        's' : '',
-        'q' : [],
-        't' : 1
-      };
-      </script>
-      <script src='//static.ezmob.com/tabu/display.js'></script>
-      <!-- END Ezmob TAG -->
+<body>
+  <header class="topbar">
+    <div class="logo">Code Magique</div>
+    <div class="search">
+      <input id="searchInput" placeholder="Rechercher un produit..." />
     </div>
-  </div>
-
-  <header class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Quiz & Mini-Jeux</h1>
-        <p class="text-slate-600">Démo avec emplacements pub (display + vidéo récompensée)</p>
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="px-3 py-2 rounded-xl bg-white shadow border border-slate-200">
-          <div class="text-xs text-slate-500">Vos pièces</div>
-          <div class="text-xl font-semibold"><span id="coins">0</span> 🪙</div>
-        </div>
-        <button id="btn-rewarded" class="px-4 py-2 rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 transition">
-          🎥 Regarder une pub (+10🪙)
-        </button>
-      </div>
+    <div class="actions">
+      <button id="favoritesBtn">Favoris</button>
+      <button id="cartBtn">Panier 🛒 (<span id="cartCount">0</span>)</button>
+      <button id="loginBtn">Se connecter / S'inscrire</button>
+      <button id="adminBtn" class="hidden">Admin</button>
+      <button id="logoutBtn" class="hidden">Déconnexion</button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <section class="lg:col-span-9 space-y-6">
-
-        <!-- In-content ad 1 -->
-        <div id="ad-incontent-1" class="ad-slot rounded-xl border border-slate-200">
-          <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
-          <div id="ad-incontent-1-container"></div>
-          <!-- START Ezmob TAG -->
-          <script>
-          window.adk_pdisp = {
-            'h' : 'xml.qualiclicks.com', 
-            'f' : 874125,
-            'a' : 'zwOM',
-            'ps' : [1],
-            'cin' : 4,
-            's' : '',
-            'q' : [],
-            't' : 1
-          };
-          </script>
-          <script src='//static.ezmob.com/tabu/display.js'></script>
-          <!-- END Ezmob TAG -->
-        </div>
-
-        <div class="bg-white rounded-2xl shadow border border-slate-200">
-          <div class="flex text-sm">
-            <button data-tab="quiz" class="tab-btn flex-1 px-4 py-3 font-medium border-b-2 border-indigo-600 text-indigo-700">Quiz</button>
-            <button data-tab="jeu" class="tab-btn flex-1 px-4 py-3 font-medium border-b-2 border-transparent hover:text-indigo-700">Mini-Jeu</button>
-          </div>
-          <div class="p-5">
-            <div id="panel-quiz" class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div class="text-sm text-slate-600">Question <span id="q-index">1</span>/<span id="q-total">5</span></div>
-                <div class="text-sm text-slate-600">Score: <span id="score">0</span></div>
-              </div>
-              <div id="question" class="text-lg font-semibold"></div>
-              <div id="answers" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-              <div class="flex items-center justify-between pt-2">
-                <button id="next" class="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-40">Suivant</button>
-                <button id="reset-quiz" class="px-4 py-2 rounded-xl bg-slate-100 border">Recommencer</button>
-              </div>
-            </div>
-
-            <div id="panel-jeu" class="hidden">
-              <div class="flex items-center justify-between mb-3">
-                <div class="text-sm text-slate-600">Meilleur: <span id="best">0</span></div>
-                <button id="reset-game" class="px-3 py-2 rounded-xl bg-slate-100 border">Réinitialiser</button>
-              </div>
-              <div class="bg-gradient-to-br from-indigo-50 to-white border border-slate-200 rounded-2xl p-5">
-                <p class="mb-3 text-slate-700">Jeu du <strong>réflexe</strong> : cliquez le plus vite possible sur la cible !</p>
-                <div id="arena" class="relative h-72 rounded-xl bg-white border overflow-hidden">
-                  <button id="target" class="absolute w-12 h-12 rounded-full bg-indigo-600 shadow"></button>
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                  <div>Coups: <span id="hits">0</span></div>
-                  <div>Temps: <span id="time">30</span>s</div>
-                </div>
-                <div class="mt-4">
-                  <button id="start" class="px-4 py-2 rounded-xl bg-indigo-600 text-white">Démarrer</button>
-                </div>
-              </div>
-
-              <!-- In-content ad 2 -->
-              <div id="ad-incontent-2" class="ad-slot rounded-xl border border-slate-200 mt-6">
-                <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
-                <div id="ad-incontent-2-container"></div>
-                <!-- START Ezmob TAG -->
-                <script>
-                window.adk_pdisp = {
-                  'h' : 'xml.qualiclicks.com', 
-                  'f' : 874125,
-                  'a' : 'zwOM',
-                  'ps' : [1],
-                  'cin' : 4,
-                  's' : '',
-                  'q' : [],
-                  't' : 1
-                };
-                </script>
-                <script src='//static.ezmob.com/tabu/display.js'></script>
-                <!-- END Ezmob TAG -->
-              </div>
-            </div>
-          </div>
-        </div>
+  <main>
+    <!-- Section principale -->
+    <div id="mainSection">
+      <section class="hero">
+        <h1>Bienvenue sur Code Magique</h1>
       </section>
 
-      <aside class="lg:col-span-3">
-        <div class="sticky top-[72px] space-y-6">
+      <section class="products" id="products"></section>
+    </div>
 
-          <!-- Sidebar ad 1 -->
-          <div id="ad-sidebar-1" class="ad-slot rounded-xl border border-slate-200">
-            <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
-            <div id="ad-sidebar-1-container"></div>
-            <!-- START Ezmob TAG -->
-            <script>
-            window.adk_pdisp = {
-              'h' : 'xml.qualiclicks.com', 
-              'f' : 874125,
-              'a' : 'zwOM',
-              'ps' : [1],
-              'cin' : 4,
-              's' : '',
-              'q' : [],
-              't' : 1
-            };
-            </script>
-            <script src='//static.ezmob.com/tabu/display.js'></script>
-            <!-- END Ezmob TAG -->
-          </div>
+    <!-- Section admin -->
+    <div id="adminSection" class="admin-section">
+      <div class="admin-main">
+        <section class="admin-panel">
+          <h2>Administration</h2>
+          
+          <!-- Formulaire d'ajout -->
+          <h3>Ajouter un produit</h3>
+          <form id="addProductForm">
+            <input name="title" placeholder="Titre" required />
+              <input name="price" type="number" step="0.01" placeholder="Prix (EUR)" required />
+            <textarea name="description" placeholder="Description"></textarea>
+            <label>Image: <input type="file" name="image" accept="image/*" /></label>
+            <label>Document: <input type="file" name="document" /></label>
+            <button type="submit" class="btn">Ajouter le produit</button>
+          </form>
+          <div id="addResult"></div>
 
-          <!-- Sidebar ad 2 -->
-          <div id="ad-sidebar-2" class="ad-slot rounded-xl border border-slate-200">
-            <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
-            <div id="ad-sidebar-2-container"></div>
-            <!-- START Ezmob TAG -->
-            <script>
-            window.adk_pdisp = {
-              'h' : 'xml.qualiclicks.com', 
-              'f' : 874125,
-              'a' : 'zwOM',
-              'ps' : [1],
-              'cin' : 4,
-              's' : '',
-              'q' : [],
-              't' : 1
-            };
-            </script>
-            <script src='//static.ezmob.com/tabu/display.js'></script>
-            <!-- END Ezmob TAG -->
-          </div>
-
-        </div>
-      </aside>
+          <!-- Liste des produits -->
+          <h3 style="margin-top:30px">Gérer les produits</h3>
+          <div id="adminProductsList" style="margin-top:20px"></div>
+        </section>
+      </div>
     </div>
   </main>
 
-  <!-- Interstitial & Rewarded Modals -->
-  <div id="interstitial" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[60]">
-    <div class="bg-white max-w-md w-full mx-4 rounded-2xl p-6 text-center space-y-3">
-      <div class="mx-auto w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center"><span class="spin">🎯</span></div>
-      <h3 class="text-lg font-semibold">Pause pub</h3>
-      <p class="text-slate-600 text-sm">Ici s’affichera votre interstitiel. Fermer après 10–15s.</p>
-      <button id="close-interstitial" class="px-4 py-2 rounded-xl bg-slate-800 text-white">Continuer</button>
+  <!-- Modals -->
+  <div id="authModal" class="modal hidden">
+    <div class="modal-content auth-container">
+      <button id="closeAuthBtn">✕</button>
+
+      <div class="auth-section">
+        <h2>Se connecter</h2>
+        <form id="loginForm">
+          <input id="loginIdentifier" type="text" name="identifier" placeholder="Email ou nom d'utilisateur" required />
+          <input id="loginPassword" type="password" name="pswd" placeholder="Mot de passe" required />
+          <button type="submit">Se connecter</button>
+          <p style="text-align:center;margin-top:10px">
+            <a href="#" id="forgotPasswordLink" style="color:var(--accent);text-decoration:none;">Mot de passe oublié ?</a>
+          </p>
+        </form>
+      </div>
+
+      <div class="auth-section">
+        <h2>S'inscrire</h2>
+        <form id="signupForm">
+          <input id="signupUsername" type="text" name="txt" placeholder="Nom d'utilisateur" required />
+          <input id="signupEmail" type="email" name="email" placeholder="Email" required />
+          <input id="signupPassword" type="password" name="pswd" placeholder="Mot de passe" required />
+          <button type="submit">S'inscrire</button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <div id="rewarded-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[60]">
-    <div class="bg-white max-w-md w-full mx-4 rounded-2xl p-6 text-center space-y-3">
-      <div class="mx-auto w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">🎥</div>
-      <h3 class="text-lg font-semibold">Vidéo récompensée</h3>
-      <p class="text-slate-600 text-sm">Simule une pub vidéo (30s).</p>
-      <div id="rewarded-timer" class="font-mono">00:30</div>
-      <button id="skip-rewarded" class="px-4 py-2 rounded-xl bg-slate-100 border">Fermer</button>
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Panier 🛒</h3>
+      <div id="cartItems"></div>
+      <div class="cart-total">
+        Total: €<span id="cartTotal">0.00</span>
+      </div>
+
+      <!-- Bouton payer -->
+      <button id="payNowBtn" class="btn" style="width:100%;margin-top:10px">
+        💳 Payer
+      </button>
+
+      <!-- Zone où apparaîtront les boutons de paiement -->
+      <div id="paymentSection" style="margin-top:15px;display:none">
+        <h4>Paiement sécurisé</h4>
+        <div id="cardPayment" style="margin-top:10px"></div>
+        <div id="paypalButtons" style="margin-top:15px"></div>
+      </div>
+
+      <button id="closeCart" style="margin-top:20px">Fermer</button>
     </div>
   </div>
 
-  <footer class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-slate-500">
-    Démo éducative. Remplacez les zones « Publicité » par vos tags AdSense/Ad Manager une fois approuvé.
-  </footer>
+  <div id="favoritesModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Favoris</h3>
+      <div id="favoritesList"></div>
+      <button id="closeFav">Fermer</button>
+    </div>
+  </div>
 
-  <!-- Ton script JS reste inchangé -->
+  <div id="forgotModal" class="modal hidden">
+  <div class="modal-content" style="max-width:400px;text-align:center">
+    <h3>Réinitialiser le mot de passe</h3>
+    <p>Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.</p>
+    <input id="forgotEmail" type="email" placeholder="Votre email" required style="width:100%;padding:10px;margin:10px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:var(--glass);color:white;">
+    <button id="sendResetEmail" class="btn">Envoyer</button>
+    <button id="closeForgot" class="btn" style="background:#6c757d;margin-top:10px">Annuler</button>
+    <div id="forgotResult" style="margin-top:10px;color:#9aa7bd"></div>
+  </div>
+</div>
+
+
   <script>
-    /* --- Code JS quiz & mini-jeu --- */
-    const $ = (s, r=document) => r.querySelector(s);
-    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-    const state = {
-      coins: Number(localStorage.getItem('coins')||0),
-      best: Number(localStorage.getItem('best')||0),
-      score: 0,
-      qIndex: 0,
-      questions: [
-        { q: "Quelle est la capitale de la France ?", a: ["Paris","Lyon","Marseille","Nice"], c: 0 },
-        { q: "Combien font 7 × 8 ?", a: ["48","54","56","64"], c: 2 },
-        { q: "Langage du web côté client ?", a: ["Python","JavaScript","PHP","C++"], c: 1 },
-        { q: "Couleur obtenue: rouge + bleu ?", a: ["Violet","Orange","Vert","Marron"], c: 0 },
-        { q: "Année de sortie de HTML5 ?", a: ["2008","2010","2014","2018"], c: 2 },
-      ]
-    };
-    function save(){ localStorage.setItem('coins', state.coins); localStorage.setItem('best', state.best); }
-    function addCoins(n){ state.coins += n; $('#coins').textContent = state.coins; save(); }
-    $$('.tab-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        $$('.tab-btn').forEach(b=>{ b.classList.remove('text-indigo-700','border-indigo-600'); b.classList.add('border-transparent'); });
-        btn.classList.add('text-indigo-700','border-indigo-600');
-        const tab = btn.dataset.tab;
-        $('#panel-quiz').classList.toggle('hidden', tab!== 'quiz');
-        $('#panel-jeu').classList.toggle('hidden', tab!== 'jeu');
-      });
-    });
-    function renderQuestion(){
-      const q = state.questions[state.qIndex];
-      $('#q-index').textContent = state.qIndex+1; $('#q-total').textContent = state.questions.length;
-      $('#question').textContent = q.q;
-      const answers = $('#answers');
-      answers.innerHTML = '';
-      q.a.forEach((txt, i)=>{
-        const btn = document.createElement('button');
-        btn.className = 'px-3 py-2 rounded-xl border bg-white hover:bg-indigo-50 text-left';
-        btn.textContent = txt;
-        btn.onclick = ()=> selectAnswer(i);
-        answers.appendChild(btn);
-      });
-      $('#next').disabled = true;
-    }
-    function selectAnswer(i){
-      const q = state.questions[state.qIndex];
-      $$('#answers button').forEach((b, idx)=>{
-        b.disabled = true;
-        if(idx===q.c){ b.classList.add('bg-green-100','border-green-300'); }
-        if(idx===i && i!==q.c){ b.classList.add('bg-red-100','border-red-300'); }
-      });
-      if(i===q.c){ state.score += 1; addCoins(2); }
-      $('#score').textContent = state.score;
-      $('#next').disabled = false;
-      if((state.qIndex+1) % 2 === 0){ openInterstitial(); }
-    }
-    $('#next').addEventListener('click', ()=>{
-      state.qIndex++;
-      if(state.qIndex >= state.questions.length){
-        alert(`Quiz terminé ! Score ${state.score}/${state.questions.length}. +5🪙`);
-        addCoins(5);
-        state.qIndex = 0; state.score = 0; $('#score').textContent = 0;
-      }
-      renderQuestion();
-    });
-    $('#reset-quiz').addEventListener('click', ()=>{ state.qIndex = 0; state.score = 0; $('#score').textContent = 0; renderQuestion(); });
+    // État global
+    const API = '/api';
+    let currentUser = null;
+    let token = localStorage.getItem('pv_token');
+    if (token) try { currentUser = JSON.parse(atob(token.split('.')[1])); } catch(e) {}
 
-    let timerId = null, tLeft = 30, hits = 0;
-    function moveTarget(){
-      const arena = $('#arena'); const target = $('#target');
-      const r = arena.getBoundingClientRect();
-      const size = 48;
-      const x = Math.random() * (r.width - size);
-      const y = Math.random() * (r.height - size);
-      target.style.transform = `translate(${x}px, ${y}px)`;
+    // Éléments DOM
+    const dom = {
+      products: document.getElementById('products'),
+        loginBtn: document.getElementById('loginBtn'),
+        logoutBtn: document.getElementById('logoutBtn'),
+        adminBtn: document.getElementById('adminBtn'),
+        authModal: document.getElementById('authModal'),
+        closeAuthBtn: document.getElementById('closeAuthBtn'),
+      cartBtn: document.getElementById('cartBtn'),
+      cartModal: document.getElementById('cartModal'),
+      cartItems: document.getElementById('cartItems'),
+      cartTotal: document.getElementById('cartTotal'),
+      cartCount: document.getElementById('cartCount'),
+      closeCart: document.getElementById('closeCart'),
+      favoritesBtn: document.getElementById('favoritesBtn'),
+      favoritesModal: document.getElementById('favoritesModal'),
+      favoritesList: document.getElementById('favoritesList'),
+      closeFav: document.getElementById('closeFav'),
+      searchInput: document.getElementById('searchInput'),
+      mainSection: document.getElementById('mainSection'),
+      adminSection: document.getElementById('adminSection'),
+      addProductForm: document.getElementById('addProductForm'),
+      addResult: document.getElementById('addResult')
+    };
+
+    // Helpers
+    async function api(path, opts={}){
+      opts.headers = opts.headers || {};
+      if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+      const res = await fetch(API + path, opts);
+      return res.json();
     }
-    $('#target').addEventListener('click', ()=>{
-      if(!timerId) return;
-      hits++; $('#hits').textContent = hits; addCoins(1);
-      moveTarget();
-      if(hits % 10 === 0){ openInterstitial(); }
-    });
-    $('#start').addEventListener('click', ()=>{
-      if(timerId) return;
-      hits = 0; $('#hits').textContent = hits; tLeft = 30; $('#time').textContent = tLeft;
-      moveTarget();
-      timerId = setInterval(()=>{
-        tLeft--; $('#time').textContent = tLeft;
-        if(tLeft<=0){
-          clearInterval(timerId); timerId = null;
-          state.best = Math.max(state.best, hits); $('#best').textContent = state.best; save();
-          alert(`Fin ! Coups: ${hits}. +5🪙`); addCoins(5);
+
+    function escapeHtml(s){ return String(s).replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    function showModal(modal){ modal.classList.remove('hidden'); }
+    function hideModal(modal){ modal.classList.add('hidden'); }
+
+    // Gestion interface admin
+    function updateAuthUI() {
+      const isAdmin = currentUser && currentUser.is_admin;
+      console.log('Current user:', currentUser); // Pour le débogage
+      dom.loginBtn.style.display = token ? 'none' : 'block';
+      dom.logoutBtn.style.display = token ? 'block' : 'none';
+      dom.adminBtn.style.display = isAdmin ? 'block' : 'none';
+      
+      if (isAdmin) {
+        dom.adminBtn.classList.remove('hidden');
+        if (location.hash === '#admin') {
+          dom.mainSection.style.display = 'none';
+          dom.adminSection.style.display = 'block';
+        } else {
+          dom.mainSection.style.display = 'block';
+          dom.adminSection.style.display = 'none';
         }
-      }, 1000);
+      } else {
+        dom.adminBtn.classList.add('hidden');
+        dom.mainSection.style.display = 'block';
+        dom.adminSection.style.display = 'none';
+      }
+    }
+
+    // Écouter les changements de hash pour admin
+    window.addEventListener('hashchange', updateAuthUI);
+    dom.adminBtn.addEventListener('click', () => {
+      location.hash = '#admin';
+      updateAuthUI();
     });
-    $('#reset-game').addEventListener('click', ()=>{
-      if(timerId){ clearInterval(timerId); timerId = null; }
-      hits = 0; $('#hits').textContent = hits; tLeft = 30; $('#time').textContent = tLeft;
+
+    // Navigation
+    dom.logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('pv_token');
+      token = null;
+      currentUser = null;
+      location.hash = '';
+      updateAuthUI();
+      loadProducts();
     });
-    function openInterstitial(){ const el = $('#interstitial'); el.classList.remove('hidden'); el.classList.add('flex'); }
+
+    // Auth
+    dom.loginBtn.addEventListener('click', () => showModal(dom.authModal));
+    // close button inside modal
+    dom.closeAuthBtn.addEventListener('click', () => hideModal(dom.authModal));
+
+    // Signup form handler
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const username = document.getElementById('signupUsername').value;
+      const data = await api('/register', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password, username })
+      });
+      if (data.token) {
+        token = data.token;
+        currentUser = JSON.parse(atob(token.split('.')[1]));
+        localStorage.setItem('pv_token', token);
+        hideModal(dom.authModal);
+        updateAuthUI();
+        refreshCartCount();
+        loadProducts();
+      } else {
+        alert(data.error || 'Erreur inscription');
+      }
+    });
+
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Lire le champ d'identifiant (email ou nom d'utilisateur)
+      const identifier = document.getElementById('loginIdentifier').value;
+      const password = document.getElementById('loginPassword').value;
+      const payload = { 
+        // Si l'identifiant contient @, c'est un email, sinon c'est un nom d'utilisateur
+        [identifier.includes('@') ? 'email' : 'username']: identifier,
+        password 
+      };
+      const data = await api('/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (data.token) {
+        token = data.token;
+        currentUser = JSON.parse(atob(token.split('.')[1]));
+        localStorage.setItem('pv_token', token);
+        hideModal(dom.authModal);
+        updateAuthUI();
+        refreshCartCount();
+        loadProducts();
+      } else {
+        alert(data.error || 'Erreur connexion');
+      }
+    });
+    // === MOT DE PASSE OUBLIÉ ===
+const forgotModal = document.getElementById('forgotModal');
+const forgotLink = document.getElementById('forgotPasswordLink');
+const closeForgot = document.getElementById('closeForgot');
+const sendResetEmail = document.getElementById('sendResetEmail');
+const forgotEmail = document.getElementById('forgotEmail');
+const forgotResult = document.getElementById('forgotResult');
+
+// Ouvrir la modale
+forgotLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  hideModal(dom.authModal); // on ferme la modale de login
+  showModal(forgotModal);
+});
+
+// Fermer la modale
+closeForgot.addEventListener('click', () => hideModal(forgotModal));
+
+// Envoyer la demande de réinitialisation
+sendResetEmail.addEventListener('click', async () => {
+  const email = forgotEmail.value.trim();
+  if (!email) {
+    forgotResult.style.color = 'red';
+    forgotResult.innerText = "Veuillez entrer un email.";
+    return;
+  }
+  
+  try {
+    forgotResult.style.color = '#9aa7bd';
+    forgotResult.innerText = "Envoi en cours...";
+    
+    const res = await fetch('/api/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      forgotResult.style.color = 'lightgreen';
+      forgotResult.innerText = "Un lien de réinitialisation a été envoyé à votre adresse email.";
+    } else {
+      forgotResult.style.color = 'red';
+      forgotResult.innerText = data.error || "Erreur lors de l'envoi de l'email.";
+    }
+  } catch (err) {
+    forgotResult.style.color = 'red';
+    forgotResult.innerText = "Erreur réseau : " + err.message;
+  }
+  });
+
+
+    // Admin: charger la liste des produits dans le panel admin
+    async function loadAdminProducts() {
+      if (!currentUser?.is_admin) return;
+      const items = await api('/products');
+      const container = document.getElementById('adminProductsList');
+      container.innerHTML = items.map(p => `
+        <div style="display:flex;gap:10px;align-items:center;padding:12px;border-bottom:1px solid #eee;background:var(--bg-1);margin-bottom:8px;border-radius:4px">
+          <img src="${p.image||'https://via.placeholder.com/80'}" style="width:80px;height:50px;object-fit:cover;border-radius:4px"/>
+          <div style="flex:1">
+            <b>${escapeHtml(p.title||'Sans titre')}</b>
+            <div>${Number(p.price||0).toFixed(2)} €</div>
+            <div style="color:white;font-size:15px">${escapeHtml((p.description||'').slice(0,100))}...</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" style="background:#ffc107;color:#000" onclick="editProduct(${p.id})">Modifier</button>
+            <button class="btn" style="background:#dc3545" onclick="deleteProduct(${p.id})">Supprimer</button>
+          </div>
+        </div>
+      `).join('') || '<p>Aucun produit</p>';
+    }
+
+    // Admin: supprimer un produit
+    async function deleteProduct(id) {
+      if (!currentUser?.is_admin) return;
+      if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+      
+      try {
+        const result = await fetch(API + '/products/' + id, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!result.ok) {
+          const text = await result.text();
+          throw new Error(text || 'Erreur réseau');
+        }
+        
+        const data = await result.json();
+        
+        if (data.success) {
+          alert('Produit supprimé !');
+          loadAdminProducts(); // Rafraîchir la liste admin
+          loadProducts();     // Rafraîchir la liste publique
+        } else {
+          throw new Error(data.error || 'Erreur inconnue');
+        }
+      } catch (err) {
+        alert('Erreur: ' + (err.message || err));
+      }
+    }
+
+    // Admin: ajout produit
+    dom.addProductForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser?.is_admin) return;
+      
+      const form = e.target;
+      const fd = new FormData(form);
+      
+      try {
+        const res = await fetch('/api/products', { 
+          method: 'POST', 
+          headers: { Authorization: 'Bearer ' + token }, 
+          body: fd 
+        });
+
+        if (!res.ok) throw new Error('Erreur réseau');
+        
+        const data = await res.json();
+        if (!data.id) throw new Error(data.error || 'Erreur inconnue');
+        
+        dom.addResult.style.color = 'green';
+        dom.addResult.innerText = 'Produit ajouté avec succès !';
+        form.reset();
+        loadProducts();
+        loadAdminProducts();
+        
+      } catch (err) {
+        dom.addResult.style.color = 'red';
+        dom.addResult.innerText = 'Erreur : ' + (err.message || err);
+      }
+    });
+
+    // Catalogue produits
+    async function loadProducts(){
+      const items = await api('/products');
+      renderProducts(items || []);
+    }
+
+    async function renderProducts(items){
+  dom.products.innerHTML = '';
+  
+  // On récupère les favoris actuels pour colorer les bons cœurs
+  let favorites = [];
+  if (token) {
+    try {
+      favorites = await api('/favorites');
+    } catch (err) {
+      console.warn('Erreur chargement favoris:', err);
+    }
+  }
+
+  const favIds = favorites.map(f => f.id);
+
+  items.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    const isFav = favIds.includes(p.id);
+
+    el.innerHTML = `
+      <img src="${p.image || 'https://via.placeholder.com/300x150?text=No+Image'}" />
+      <h4>${escapeHtml(p.title||'Sans titre')}</h4>
+      <p>${escapeHtml((p.description||'')).slice(0,120)}</p>
+      <div class="price">
+        ${!p.price || Number(p.price) === 0 ? 'Gratuit' : `€${Number(p.price).toFixed(2)}`}
+      </div>
+      <div class="card-actions">
+        <div>
+          <button class="btn addCart" data-id="${p.id}">Ajouter</button>
+          <button class="fav ${isFav ? 'active' : ''}" data-id="${p.id}">♥</button>
+        </div>
+        <div>
+          <button class="btn open" data-id="${p.id}">Détails</button>
+        </div>
+      </div>
+    `;
+    dom.products.appendChild(el);
+  });
+
+      // Event listeners produits
+      document.querySelectorAll('.addCart').forEach(b => b.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        if (!token) return showModal(dom.authModal);
+        await api('/cart/add', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ product_id: id, qty:1 })
+        });
+        refreshCartCount();
+        alert('Ajouté au Panier 🛒');
+      }));
+
+     document.querySelectorAll('.fav').forEach(b => 
+  b.addEventListener('click', async (e) => {
+    const btn = e.target;
+    const id = btn.dataset.id;
+    if (!token) return showModal(dom.authModal);
+
+    await api('/favorites/toggle', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ product_id: id })
+    });
+
+    // Bascule la couleur du cœur et animation
+    btn.classList.toggle('active');
+    btn.animate([{ transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 200 });
+  })
+);
+
+      document.querySelectorAll('.open').forEach(b => b.addEventListener('click', (e) => {
+        const id = e.target.dataset.id;
+        openProduct(id);
+      }));
+    }
+
+// === PANIER ===
+dom.cartBtn.addEventListener('click', async () => {
+  if (!token) return showModal(dom.authModal);
+  showModal(dom.cartModal);
+  await refreshCartModal();
+});
+
+// Attacher le listener une seule fois ici
+const payNowBtn = document.getElementById('payNowBtn');
+const paymentSection = document.getElementById('paymentSection');
+
+payNowBtn.addEventListener('click', async () => {
+  const total = parseFloat(dom.cartTotal.innerText);
+  if (total <= 0) {
+    alert('Votre panier est vide.');
+    return;
+  }
+  paymentSection.style.display = 'block';
+  renderSecurePayment(total);
+});
+
+// --- Fonction principale de paiement sécurisé ---
+function renderSecurePayment(total) {
+  const cardDiv = document.getElementById('cardPayment');
+  const paypalDiv = document.getElementById('paypalButtons');
+  cardDiv.innerHTML = '';
+  paypalDiv.innerHTML = '';
+
+  // === Carte bancaire (intégration Stripe Elements simulée) ===
+  cardDiv.innerHTML = `
+    <form id="fakeCardForm" style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <input type="text" placeholder="Numéro de carte" required maxlength="19" style="padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--glass);color:white" />
+      <div style="display:flex;gap:10px">
+        <input type="text" placeholder="MM/AA" required maxlength="5" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--glass);color:white" />
+        <input type="text" placeholder="CVC" required maxlength="3" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:var(--glass);color:white" />
+      </div>
+      <button type="submit" class="btn" style="width:100%">💳 Valider le paiement</button>
+    </form>
+    <div id="cardResult" style="margin-top:8px;color:#9aa7bd"></div>
+  `;
+
+  const cardForm = document.getElementById('fakeCardForm');
+  const cardResult = document.getElementById('cardResult');
+
+  cardForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    cardResult.innerText = '🔒 Paiement sécurisé en cours...';
+    setTimeout(() => {
+      cardResult.style.color = 'lightgreen';
+      cardResult.innerText = '✅ Paiement accepté avec succès !';
+      // Ici on viderait le panier côté serveur
+    }, 2000);
+  });
+
+  // === PayPal (intégration officielle) ===
+  const script = document.createElement('script');
+  script.src = "https://www.paypal.com/sdk/js?client-id=sb&currency=EUR";
+  script.onload = () => {
+    paypal.Buttons({
+      style: { color: 'gold', shape: 'rect', label: 'pay' },
+      createOrder: (data, actions) => actions.order.create({
+        purchase_units: [{ amount: { value: total.toFixed(2) } }]
+      }),
+      onApprove: (data, actions) =>
+        actions.order.capture().then(() => {
+          alert('✅ Paiement PayPal confirmé !');
+          paymentSection.style.display = 'none';
+        })
+    }).render('#paypalButtons');
+  };
+  document.body.appendChild(script);
+}
+
+dom.closeCart.addEventListener('click', () => hideModal(dom.cartModal));
+
+// --- Compteur du panier ---
+async function refreshCartCount() {
+  if (!token) {
+    dom.cartCount.innerText = '0';
+    return;
+  }
+  const items = await api('/cart');
+  dom.cartCount.innerText = items.length || 0;
+}
+
+// --- Actualisation du contenu du panier ---
+async function refreshCartModal() {
+  const items = await api('/cart');
+  
+  dom.cartItems.innerHTML = items.map(i => `
+    <div style="display:flex;gap:10px;align-items:center;padding:6px;border-bottom:1px solid #eee">
+      <img src="${i.image || 'https://via.placeholder.com/80'}"
+           style="width:80px;height:50px;object-fit:cover"/>
+      <div style="flex:1">
+        <b>${i.title}</b>
+        <div>€${Number(i.price).toFixed(2)}</div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+          <button class="btn dec" data-id="${i.id}">−</button>
+          <span class="qty">${i.qty}</span>
+          <button class="btn inc" data-id="${i.id}">+</button>
+        </div>
+      </div>
+      <button class="btn remove" data-id="${i.id}">Supprimer</button>
+    </div>
+  `).join('');
+
+  // --- Suppression d’un article ---
+  document.querySelectorAll('.remove').forEach(b => b.addEventListener('click', async e => {
+    const id = e.target.dataset.id;
+    await api('/cart/remove',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({product_id:e.target.dataset.id})
+    });
+    await refreshCartModal();
+    refreshCartCount();
+  }));
+
+  // --- Incrémentation quantité ---
+  document.querySelectorAll('.inc').forEach(b => b.addEventListener('click', async e => {
+    const id = e.target.dataset.id;
+    await api('/cart/add',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({product_id:e.target.dataset.id, qty:1})
+    });
+    await refreshCartModal();
+    refreshCartCount();
+  }));
+
+  // --- Décrémentation quantité ---
+  document.querySelectorAll('.dec').forEach(b => b.addEventListener('click', async e => {
+    const id = e.target.dataset.id;
+    await api('/cart/add',{
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({product_id:e.target.dataset.id, qty:-1})
+    });
+    await refreshCartModal();
+    refreshCartCount();
+  }));
+
+  // --- Calcul du total ---
+  const total = items.reduce((s, i) => s + (i.price || 0) * i.qty, 0);
+  dom.cartTotal.innerText = total.toFixed(2);
+
+  // --- Boutons PayPal ---
+  renderPayPalButtons(total);
+}
+
+
+    // Favoris
+    dom.favoritesBtn.addEventListener('click', async () => {
+      if (!token) return showModal(dom.authModal);
+      showModal(dom.favoritesModal);
+      const favs = await api('/favorites');
+      dom.favoritesList.innerHTML = favs.map(p => `
+        <div class="card" style="margin-bottom:8px">
+          <img src="${p.image||'https://via.placeholder.com/150'}" style="height:50px;width:80px;object-fit:cover;float:left;margin-right:8px"/>
+          <div>
+            <b>${p.title}</b>
+          <div>€${Number(p.price||0).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+    });
+    dom.closeFav.addEventListener('click', () => hideModal(dom.favoritesModal));
+
+    // PayPal
+    function renderPayPalButtons(total) {
+      const payDiv = document.getElementById('paypalButtons');
+      payDiv.innerHTML = '';
+      if (!total || total <= 0) return;
+      payDiv.appendChild(script1);
+      payDiv.appendChild(script2);
+    }
+
+
+    // Recherche
+    dom.searchInput.addEventListener('input', async (e) => {
+      const q = e.target.value.toLowerCase();
+      const items = await api('/products');
+      const filtered = items.filter(p => 
+        (p.title||'').toLowerCase().includes(q) || 
+        (p.description||'').toLowerCase().includes(q)
+      );
+      renderProducts(filtered);
+    });
+
+    // Détails produit + avis
+    async function openProduct(id){
+      const prods = await api('/products');
+      const p = prods.find(x => String(x.id) === String(id));
+      if (!p) return alert('Produit introuvable');
+
+      const box = document.createElement('div');
+      box.className = 'modal';
+      box.innerHTML = `
+        <div class="modal-content">
+          <h3>${escapeHtml(p.title)}</h3>
+          <img src="${p.image||'https://via.placeholder.com/400x200'}" style="width:100%;height:180px;object-fit:cover"/>
+          <p>${escapeHtml(p.description)}</p>
+            <div>Prix: €${Number(p.price).toFixed(2)}</div>
+          <div style="margin-top:10px">
+            <button class="btn addCartNow">Ajouter au Panier 🛒</button>
+            <button class="btn addReview">Laisser un avis</button>
+            <button class="btn closeModal">Fermer</button>
+          </div>
+          <div id="reviewsArea"></div>
+        </div>
+      `;
+
+      document.body.appendChild(box);
+      box.querySelector('.closeModal').addEventListener('click', () => box.remove());
+      box.querySelector('.addCartNow').addEventListener('click', async () => {
+        if (!token) return showModal(dom.authModal);
+        await api('/cart/add', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ product_id: p.id, qty:1 })
+        });
+        alert('Ajouté');
+        refreshCartCount();
+      });
+
+      box.querySelector('.addReview').addEventListener('click', async () => {
+        if (!token) return showModal(dom.authModal);
+        const rating = prompt('Note (1-5)');
+        if (!rating) return;
+        const comment = prompt('Commentaire');
+        if (!comment) return;
+        await api('/reviews', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ product_id: p.id, rating: Number(rating)||5, comment })
+        });
+        alert('Merci pour votre avis');
+        // Recharger les avis
+        const reviews = await api('/reviews/' + p.id);
+        const area = box.querySelector('#reviewsArea');
+        area.innerHTML = '<h4>Avis</h4>' + (
+          reviews.map(r => `
+            <div style="border-top:1px solid #eee;padding:6px">
+              <b>${r.username||'Anonyme'}</b> - ${'★'.repeat(r.rating)}
+              <div>${escapeHtml(r.comment||'')}</div>
+            </div>
+          `).join('') || 'Aucun avis'
+        );
+      });
+
+      // Charger les avis
+      const reviews = await api('/reviews/' + p.id);
+      const area = box.querySelector('#reviewsArea');
+      area.innerHTML = '<h4>Avis</h4>' + (
+        reviews.map(r => `
+          <div style="border-top:1px solid #eee;padding:6px">
+            <b>${r.username||'Anonyme'}</b> - ${'★'.repeat(r.rating)}
+            <div>${escapeHtml(r.comment||'')}</div>
+          </div>
+        `).join('') || 'Aucun avis'
+      );
+    }
+
+    // Admin: éditer un produit
+    async function editProduct(id) {
+      if (!currentUser?.is_admin) return;
+      
+      const styleInput = "width:100%;padding:10px;border:1px solid #ddd;border-radius:4px";
+      const styleLabel = "display:block;margin-bottom:8px;font-weight:500";
+      
+      // Récupérer les données du produit
+      const products = await api('/products');
+      const product = products.find(p => p.id === id);
+      if (!product) {
+        alert('Produit non trouvé');
+        return;
+      }
+
+      // Créer et afficher le modal d'édition
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <div class="modal-content" style="width:90%;max-width:800px;padding:30px;max-height:90vh;overflow:auto;position:relative">
+            <button onclick="this.closest('.modal').remove()" 
+            style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:5px;z-index:1">✕</button>
+            
+            <h3 style="margin:0 0 20px 0">Modifier le produit</h3>
+            
+            <form id="editProductForm" style="display:flex;flex-direction:column;gap:15px">
+            <div style="margin-bottom:15px">
+                <label style="display:block;margin-bottom:8px">Titre du produit</label>
+                <input name="title" placeholder="Titre" value="${escapeHtml(product.title || '')}" required 
+                style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px" />
+            </div>
+
+            <div style="margin-bottom:15px">
+                <label style="display:block;margin-bottom:8px">Prix (€)</label>
+                <input name="price" type="number" step="0.01" placeholder="Prix en euros" value="${product.price || ''}" required 
+                style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px" />
+            </div>
+
+            <div style="margin-bottom:15px">
+                <label style="display:block;margin-bottom:8px">Description</label>
+                <textarea name="description" placeholder="Description détaillée du produit" 
+                style="width:100%;min-height:100px;padding:10px;border:1px solid #ddd;border-radius:4px;resize:vertical"
+                >${escapeHtml(product.description || '')}</textarea>
+            </div>
+
+            <div style="margin-bottom:15px">
+                <label style="display:block;margin-bottom:8px">Image du produit</label>
+                <div style="padding:10px;border-radius:4px">
+                ${product.image ? 
+                    `<img src="${product.image}" style="max-width:200px;max-height:150px;display:block;margin:0 0 10px 0;object-fit:contain" />` 
+                    : '<p style="color:#666;margin:0">Aucune image</p>'}
+                <input type="file" name="image" accept="image/*" style="margin-top:10px" />
+                </div>
+            </div>
+
+            <div style="margin-bottom:15px">
+                <label style="display:block;margin-bottom:8px">Document associé</label>
+                <div style="padding:10px;border-radius:4px">
+                ${product.document ? 
+                    `<a href="${product.document}" target="_blank" class="btn" style="display:inline-block;padding:8px 12px;margin-bottom:10px">Voir le document actuel</a>` 
+                    : '<p style="color:#666;margin:0">Aucun document</p>'}
+                <input type="file" name="document" style="margin-top:10px" />
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px">
+                <button type="button" class="btn" style="background:#6c757d;padding:10px 20px" 
+                onclick="this.closest('.modal').remove()">Annuler</button>
+                <button type="submit" class="btn" style="padding:10px 20px">Enregistrer</button>
+            </div>
+            </form>
+            <div id="editResult" style="margin-top:15px"></div>
+        </div>
+        `;
+
+      document.body.appendChild(modal);
+
+      // Gérer la soumission du formulaire
+      const form = modal.querySelector('#editProductForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        try {
+          const formData = new FormData(form);
+          
+          // Si pas de nouveau fichier, ne pas envoyer les champs file vides
+          if (!formData.get('image').size) formData.delete('image');
+          if (!formData.get('document').size) formData.delete('document');
+
+          const response = await fetch(`/api/products/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Bearer ' + token
+            },
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error('Erreur réseau');
+          }
+
+          const result = await response.json();
+          if (result.error) {
+            throw new Error(result.error);
+          }
+
+          alert('Produit modifié avec succès !');
+          modal.remove();
+          loadProducts();
+          loadAdminProducts();
+        } catch (error) {
+          const resultDiv = modal.querySelector('#editResult');
+          resultDiv.style.color = 'red';
+          resultDiv.textContent = 'Erreur: ' + (error.message || error);
+        }
+      });
+    }
+
+    // Initialisation
+    updateAuthUI();
+    loadProducts();
+    refreshCartCount();
+    if (currentUser?.is_admin) loadAdminProducts();
   </script>
 </body>
 </html>
