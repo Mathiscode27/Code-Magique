@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz & Mini-Jeux — Démo monétisable</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Site démo avec quiz et mini-jeux, emplacements pour publicités display et vidéo récompensée." />
+  <style>
+    .ad-slot { background: repeating-linear-gradient(45deg,#f3f4f6,#f3f4f6 10px,#e5e7eb 10px,#e5e7eb 20px); }
+    .ad-label { font-size: 10px; letter-spacing: .08em; }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from {transform: rotate(0)} to {transform: rotate(360deg)} }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+  <!-- Top sticky ad -->
+  <div id="ad-top-sticky" class="ad-slot sticky top-0 z-50 border-b border-slate-200">
+    <div class="max-w-6xl mx-auto py-2 flex items-center justify-center">
+      <span class="ad-label uppercase text-slate-500 mr-2">Publicité</span>
+      <div id="ad-top-container"></div>
+      <!-- START Ezmob TAG -->
+      <script>
+      window.adk_pdisp = {
+        'h' : 'xml.qualiclicks.com', 
+        'f' : 874125,
+        'a' : 'zwOM',
+        'ps' : [1],
+        'cin' : 4,
+        's' : '',
+        'q' : [],
+        't' : 1
+      };
+      </script>
+      <script src='//static.ezmob.com/tabu/display.js'></script>
+      <!-- END Ezmob TAG -->
+    </div>
+  </div>
+
+  <header class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Quiz & Mini-Jeux</h1>
+        <p class="text-slate-600">Démo avec emplacements pub (display + vidéo récompensée)</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-2 rounded-xl bg-white shadow border border-slate-200">
+          <div class="text-xs text-slate-500">Vos pièces</div>
+          <div class="text-xl font-semibold"><span id="coins">0</span> 🪙</div>
+        </div>
+        <button id="btn-rewarded" class="px-4 py-2 rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 transition">
+          🎥 Regarder une pub (+10🪙)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <section class="lg:col-span-9 space-y-6">
+
+        <!-- In-content ad 1 -->
+        <div id="ad-incontent-1" class="ad-slot rounded-xl border border-slate-200">
+          <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
+          <div id="ad-incontent-1-container"></div>
+          <!-- START Ezmob TAG -->
+          <script>
+          window.adk_pdisp = {
+            'h' : 'xml.qualiclicks.com', 
+            'f' : 874125,
+            'a' : 'zwOM',
+            'ps' : [1],
+            'cin' : 4,
+            's' : '',
+            'q' : [],
+            't' : 1
+          };
+          </script>
+          <script src='//static.ezmob.com/tabu/display.js'></script>
+          <!-- END Ezmob TAG -->
+        </div>
+
+        <div class="bg-white rounded-2xl shadow border border-slate-200">
+          <div class="flex text-sm">
+            <button data-tab="quiz" class="tab-btn flex-1 px-4 py-3 font-medium border-b-2 border-indigo-600 text-indigo-700">Quiz</button>
+            <button data-tab="jeu" class="tab-btn flex-1 px-4 py-3 font-medium border-b-2 border-transparent hover:text-indigo-700">Mini-Jeu</button>
+          </div>
+          <div class="p-5">
+            <div id="panel-quiz" class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="text-sm text-slate-600">Question <span id="q-index">1</span>/<span id="q-total">5</span></div>
+                <div class="text-sm text-slate-600">Score: <span id="score">0</span></div>
+              </div>
+              <div id="question" class="text-lg font-semibold"></div>
+              <div id="answers" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+              <div class="flex items-center justify-between pt-2">
+                <button id="next" class="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-40">Suivant</button>
+                <button id="reset-quiz" class="px-4 py-2 rounded-xl bg-slate-100 border">Recommencer</button>
+              </div>
+            </div>
+
+            <div id="panel-jeu" class="hidden">
+              <div class="flex items-center justify-between mb-3">
+                <div class="text-sm text-slate-600">Meilleur: <span id="best">0</span></div>
+                <button id="reset-game" class="px-3 py-2 rounded-xl bg-slate-100 border">Réinitialiser</button>
+              </div>
+              <div class="bg-gradient-to-br from-indigo-50 to-white border border-slate-200 rounded-2xl p-5">
+                <p class="mb-3 text-slate-700">Jeu du <strong>réflexe</strong> : cliquez le plus vite possible sur la cible !</p>
+                <div id="arena" class="relative h-72 rounded-xl bg-white border overflow-hidden">
+                  <button id="target" class="absolute w-12 h-12 rounded-full bg-indigo-600 shadow"></button>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                  <div>Coups: <span id="hits">0</span></div>
+                  <div>Temps: <span id="time">30</span>s</div>
+                </div>
+                <div class="mt-4">
+                  <button id="start" class="px-4 py-2 rounded-xl bg-indigo-600 text-white">Démarrer</button>
+                </div>
+              </div>
+
+              <!-- In-content ad 2 -->
+              <div id="ad-incontent-2" class="ad-slot rounded-xl border border-slate-200 mt-6">
+                <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
+                <div id="ad-incontent-2-container"></div>
+                <!-- START Ezmob TAG -->
+                <script>
+                window.adk_pdisp = {
+                  'h' : 'xml.qualiclicks.com', 
+                  'f' : 874125,
+                  'a' : 'zwOM',
+                  'ps' : [1],
+                  'cin' : 4,
+                  's' : '',
+                  'q' : [],
+                  't' : 1
+                };
+                </script>
+                <script src='//static.ezmob.com/tabu/display.js'></script>
+                <!-- END Ezmob TAG -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="lg:col-span-3">
+        <div class="sticky top-[72px] space-y-6">
+
+          <!-- Sidebar ad 1 -->
+          <div id="ad-sidebar-1" class="ad-slot rounded-xl border border-slate-200">
+            <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
+            <div id="ad-sidebar-1-container"></div>
+            <!-- START Ezmob TAG -->
+            <script>
+            window.adk_pdisp = {
+              'h' : 'xml.qualiclicks.com', 
+              'f' : 874125,
+              'a' : 'zwOM',
+              'ps' : [1],
+              'cin' : 4,
+              's' : '',
+              'q' : [],
+              't' : 1
+            };
+            </script>
+            <script src='//static.ezmob.com/tabu/display.js'></script>
+            <!-- END Ezmob TAG -->
+          </div>
+
+          <!-- Sidebar ad 2 -->
+          <div id="ad-sidebar-2" class="ad-slot rounded-xl border border-slate-200">
+            <div class="px-3 pt-2"><span class="ad-label uppercase text-slate-500">Publicité</span></div>
+            <div id="ad-sidebar-2-container"></div>
+            <!-- START Ezmob TAG -->
+            <script>
+            window.adk_pdisp = {
+              'h' : 'xml.qualiclicks.com', 
+              'f' : 874125,
+              'a' : 'zwOM',
+              'ps' : [1],
+              'cin' : 4,
+              's' : '',
+              'q' : [],
+              't' : 1
+            };
+            </script>
+            <script src='//static.ezmob.com/tabu/display.js'></script>
+            <!-- END Ezmob TAG -->
+          </div>
+
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Interstitial & Rewarded Modals -->
+  <div id="interstitial" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[60]">
+    <div class="bg-white max-w-md w-full mx-4 rounded-2xl p-6 text-center space-y-3">
+      <div class="mx-auto w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center"><span class="spin">🎯</span></div>
+      <h3 class="text-lg font-semibold">Pause pub</h3>
+      <p class="text-slate-600 text-sm">Ici s’affichera votre interstitiel. Fermer après 10–15s.</p>
+      <button id="close-interstitial" class="px-4 py-2 rounded-xl bg-slate-800 text-white">Continuer</button>
+    </div>
+  </div>
+
+  <div id="rewarded-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[60]">
+    <div class="bg-white max-w-md w-full mx-4 rounded-2xl p-6 text-center space-y-3">
+      <div class="mx-auto w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">🎥</div>
+      <h3 class="text-lg font-semibold">Vidéo récompensée</h3>
+      <p class="text-slate-600 text-sm">Simule une pub vidéo (30s).</p>
+      <div id="rewarded-timer" class="font-mono">00:30</div>
+      <button id="skip-rewarded" class="px-4 py-2 rounded-xl bg-slate-100 border">Fermer</button>
+    </div>
+  </div>
+
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-slate-500">
+    Démo éducative. Remplacez les zones « Publicité » par vos tags AdSense/Ad Manager une fois approuvé.
+  </footer>
+
+  <!-- Ton script JS reste inchangé -->
+  <script>
+    /* --- Code JS quiz & mini-jeu --- */
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const state = {
+      coins: Number(localStorage.getItem('coins')||0),
+      best: Number(localStorage.getItem('best')||0),
+      score: 0,
+      qIndex: 0,
+      questions: [
+        { q: "Quelle est la capitale de la France ?", a: ["Paris","Lyon","Marseille","Nice"], c: 0 },
+        { q: "Combien font 7 × 8 ?", a: ["48","54","56","64"], c: 2 },
+        { q: "Langage du web côté client ?", a: ["Python","JavaScript","PHP","C++"], c: 1 },
+        { q: "Couleur obtenue: rouge + bleu ?", a: ["Violet","Orange","Vert","Marron"], c: 0 },
+        { q: "Année de sortie de HTML5 ?", a: ["2008","2010","2014","2018"], c: 2 },
+      ]
+    };
+    function save(){ localStorage.setItem('coins', state.coins); localStorage.setItem('best', state.best); }
+    function addCoins(n){ state.coins += n; $('#coins').textContent = state.coins; save(); }
+    $$('.tab-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.tab-btn').forEach(b=>{ b.classList.remove('text-indigo-700','border-indigo-600'); b.classList.add('border-transparent'); });
+        btn.classList.add('text-indigo-700','border-indigo-600');
+        const tab = btn.dataset.tab;
+        $('#panel-quiz').classList.toggle('hidden', tab!== 'quiz');
+        $('#panel-jeu').classList.toggle('hidden', tab!== 'jeu');
+      });
+    });
+    function renderQuestion(){
+      const q = state.questions[state.qIndex];
+      $('#q-index').textContent = state.qIndex+1; $('#q-total').textContent = state.questions.length;
+      $('#question').textContent = q.q;
+      const answers = $('#answers');
+      answers.innerHTML = '';
+      q.a.forEach((txt, i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-2 rounded-xl border bg-white hover:bg-indigo-50 text-left';
+        btn.textContent = txt;
+        btn.onclick = ()=> selectAnswer(i);
+        answers.appendChild(btn);
+      });
+      $('#next').disabled = true;
+    }
+    function selectAnswer(i){
+      const q = state.questions[state.qIndex];
+      $$('#answers button').forEach((b, idx)=>{
+        b.disabled = true;
+        if(idx===q.c){ b.classList.add('bg-green-100','border-green-300'); }
+        if(idx===i && i!==q.c){ b.classList.add('bg-red-100','border-red-300'); }
+      });
+      if(i===q.c){ state.score += 1; addCoins(2); }
+      $('#score').textContent = state.score;
+      $('#next').disabled = false;
+      if((state.qIndex+1) % 2 === 0){ openInterstitial(); }
+    }
+    $('#next').addEventListener('click', ()=>{
+      state.qIndex++;
+      if(state.qIndex >= state.questions.length){
+        alert(`Quiz terminé ! Score ${state.score}/${state.questions.length}. +5🪙`);
+        addCoins(5);
+        state.qIndex = 0; state.score = 0; $('#score').textContent = 0;
+      }
+      renderQuestion();
+    });
+    $('#reset-quiz').addEventListener('click', ()=>{ state.qIndex = 0; state.score = 0; $('#score').textContent = 0; renderQuestion(); });
+
+    let timerId = null, tLeft = 30, hits = 0;
+    function moveTarget(){
+      const arena = $('#arena'); const target = $('#target');
+      const r = arena.getBoundingClientRect();
+      const size = 48;
+      const x = Math.random() * (r.width - size);
+      const y = Math.random() * (r.height - size);
+      target.style.transform = `translate(${x}px, ${y}px)`;
+    }
+    $('#target').addEventListener('click', ()=>{
+      if(!timerId) return;
+      hits++; $('#hits').textContent = hits; addCoins(1);
+      moveTarget();
+      if(hits % 10 === 0){ openInterstitial(); }
+    });
+    $('#start').addEventListener('click', ()=>{
+      if(timerId) return;
+      hits = 0; $('#hits').textContent = hits; tLeft = 30; $('#time').textContent = tLeft;
+      moveTarget();
+      timerId = setInterval(()=>{
+        tLeft--; $('#time').textContent = tLeft;
+        if(tLeft<=0){
+          clearInterval(timerId); timerId = null;
+          state.best = Math.max(state.best, hits); $('#best').textContent = state.best; save();
+          alert(`Fin ! Coups: ${hits}. +5🪙`); addCoins(5);
+        }
+      }, 1000);
+    });
+    $('#reset-game').addEventListener('click', ()=>{
+      if(timerId){ clearInterval(timerId); timerId = null; }
+      hits = 0; $('#hits').textContent = hits; tLeft = 30; $('#time').textContent = tLeft;
+    });
+    function openInterstitial(){ const el = $('#interstitial'); el.classList.remove('hidden'); el.classList.add('flex'); }
+  </script>
+</body>
+</html>
